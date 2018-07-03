@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class WifiList extends Fragment {
+    private static final String TAG ="WifiListFrag";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,6 +32,9 @@ public class WifiList extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    protected RecyclerView mRecyclerView;
+    protected WifiListAdapter mAdapter;
 
     public WifiList() {
         // Required empty public constructor
@@ -63,8 +70,14 @@ public class WifiList extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_wifi_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_wifi_list,container,false);
+        rootView.setTag(TAG);
+
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.wifiListRecyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mAdapter = new WifiListAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+        return rootView;
     }
 
 
@@ -84,6 +97,10 @@ public class WifiList extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void addItem(String ssid) {
+        mAdapter.addItem(ssid);
     }
 
     /**

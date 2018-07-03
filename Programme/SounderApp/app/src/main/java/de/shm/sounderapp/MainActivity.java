@@ -16,12 +16,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements WifiList.OnFragmentInteractionListener{
+    private final String TAG ="MAIN";
     public EditText et;
     public WifiManager wm;
     Fragment mFragment;
@@ -40,8 +42,7 @@ public class MainActivity extends AppCompatActivity implements WifiList.OnFragme
         wm=(WifiManager) this.getApplicationContext().getSystemService(this.WIFI_SERVICE);
         this.registerReceiver(new wifiBroadcast(),new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wm.startScan();
-        mFragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-
+        mFragment = fragment;
 
     }
 
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements WifiList.OnFragme
             List<ScanResult> results = wm.getScanResults();
             for (ScanResult item:results) {
 
+                if(mFragment instanceof WifiList){
+                    ((WifiList) mFragment).addItem(item.SSID);Log.d(TAG,item.SSID);
+                }
             }
 
         }
