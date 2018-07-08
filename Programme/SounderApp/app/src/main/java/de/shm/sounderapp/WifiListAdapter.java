@@ -1,16 +1,25 @@
 package de.shm.sounderapp;
 
+import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.ViewHolder> {
-
+    OnItemClickListener mListener;
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wifi_list_item, parent,false);
@@ -31,18 +40,16 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.ViewHo
     private static final String TAG = "WiFiListAdapter";
     private ArrayList<String> mDataSet = new ArrayList<String>();
 
-    public WifiListAdapter(){
 
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView textView;
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d(TAG,Integer.toString(getAdapterPosition()));
+                    Log.d(TAG, "Position: " + getAdapterPosition());
+                    if(mListener!=null) mListener.onItemClickListener(mDataSet.get(getAdapterPosition()));
                 }
             });
             textView = (TextView) itemView.findViewById(R.id.wifiListItemText);
@@ -53,8 +60,13 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.ViewHo
         }
     }
 
+    public interface OnItemClickListener{
+        void onItemClickListener(String data);
+    }
+    public void setOnItemClickListener(OnItemClickListener listener){
+        mListener=listener;
 
-
+    }
 
     public void addItem(String newItem) {
         for(String item:mDataSet){
@@ -67,4 +79,5 @@ public class WifiListAdapter extends RecyclerView.Adapter<WifiListAdapter.ViewHo
         mDataSet.remove(position);
         notifyItemRemoved(position);
     }
+
 }
