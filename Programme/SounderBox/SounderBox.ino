@@ -3,37 +3,56 @@
 const char *ssid = "SounderBox";
 const char *pass = "SounderBox";
 
+int old = 0;
+IPAddress alarmServer;
+
 WiFiServer server(6200);
-WiFiClient serverClients[3];
+WiFiClient serverClients;
 void setup() {
   Serial.begin(9600);
-  WiFi.softAP(ssid,pass);
+  Serial.println(WiFi.softAP(ssid, pass, 3));
   server.begin();
   server.setNoDelay(true);
   Serial.println(WiFi.softAPIP());
 }
 
 void loop() {
-  if(server.hasClient()){
-    uint8_t i =0;
-    for( i = 0; i<3 ; i++){
-      if(!serverClients[i] || !serverClients[i].connected()){
-        if(serverClients[i])serverClients[i].stop();
-        serverClients[i]=server.available();
-        break;
-        }
-      }
-      if(i==3){
-        WiFiClient serverClient = server.available();
-        serverClient.stop();
-        
-        }
+
+  int  refreshed = WiFi.softAPgetStationNum();
+  if (refreshed != old) {
+    Serial.print("Station are connected: ");
+    Serial.println(refreshed);
+    old = refreshed;
+  }
+
+  if (server.hasClient()) {
+    if (!serverClients || !serverClients.connected()) {
+      if (serverClients)serverClients.stop();
+      serverClients = server.available();
+      Serial.println("Client verbunden");
     }
-    for (uint8_t i=0;i<3;i++){
-      if(serverClients[i] && serverClients[i].connected()){
-        if(serverClients[i].available()){
-          while(serverClients[i].available())Serial.print(serverClients[i].read());
-          }
-        }
+  }
+
+  if (serverClients && serverClients.connected()) {
+    if (serverClients.available()) {
+      alarmServer = serverClients.remoteIP();
+      Serial.print("Message from ");
+      Serial.println(alarmServer);
+      while (serverClients.available())Serial.print(char(serverClients.read()));
+    }
+  }
+
+  if (Serial.available()) {
+    Serial.println("Manuele eingabe erfolgt");
+    serverClients.connect(alarmServer,6201);
+      Serial.println("Schreibe daten");
+      while (Serial.available()) {
+        serverClients.write(Serial.read());
       }
+      serverClients.write("\n");
+      serverClients.flush();
+      serverClients.stop();
+      Serial.println("Alarm gesendet");
+    
+  }
 }
