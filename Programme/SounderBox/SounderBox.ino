@@ -14,6 +14,10 @@ void setup() {
   server.begin();
   server.setNoDelay(true);
   Serial.println(WiFi.softAPIP());
+  pinMode(D0,INPUT_PULLUP);
+  pinMode(D1,INPUT_PULLUP);
+  pinMode(D2,INPUT_PULLUP);
+  pinMode(D3,INPUT_PULLUP);
 }
 
 void loop() {
