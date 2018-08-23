@@ -14,14 +14,22 @@ void setup() {
   server.begin();
   server.setNoDelay(true);
   Serial.println(WiFi.softAPIP());
-  pinMode(D0,INPUT_PULLUP);
-  pinMode(D1,INPUT_PULLUP);
-  pinMode(D2,INPUT_PULLUP);
-  pinMode(D3,INPUT_PULLUP);
+  pinMode(0,INPUT_PULLUP);
+  pinMode(1,INPUT_PULLUP);
+  pinMode(2,INPUT_PULLUP);
+  pinMode(3,INPUT_PULLUP);
 }
 
 void loop() {
 
+  uint8_t input=0;
+  if(!digitalRead(0))input|=(1<<0);
+  if(!digitalRead(1))input|=(1<<1);
+  if(!digitalRead(2))input|=(1<<2);
+  if(!digitalRead(3))input|=(1<<3);
+
+  if(input) Serial.println(input,DEC);
+  
   int  refreshed = WiFi.softAPgetStationNum();
   if (refreshed != old) {
     Serial.print("Station are connected: ");
